@@ -12,8 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.ConstraintViolationException;
-
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -29,6 +28,8 @@ import org.springframework.web.context.request.WebRequest;
 @RestControllerAdvice
 public class GlobalException {
 
+	
+
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public Map<String, String> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
@@ -38,26 +39,22 @@ public class GlobalException {
 		return errors;
 	}
 
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(ConstraintViolationException.class)
-	public Map<String, String> handleConstraintViolation(ConstraintViolationException ex) {
-		Map<String, String> errors = new HashMap<>();
-
-		ex.getConstraintViolations().forEach(cv -> {
-			errors.put("message", cv.getMessage());
-			errors.put("path", (cv.getPropertyPath()).toString());
-		});
-
-		return errors;
+	public ResponseEntity<ErrorResponse> inputValidationException(Exception ex) {
+		List<String> details = new ArrayList<>();
+		details.add(ex.getLocalizedMessage());
+		ErrorResponse error = new ErrorResponse("Record Already Exist ", details);
+		return new ResponseEntity<ErrorResponse>(error, HttpStatus.BAD_REQUEST);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@ExceptionHandler(RecordNotFoundException.class)
 	public final ResponseEntity<Object> handleRecordNotFoundException(RecordNotFoundException ex, WebRequest request) {
 		List<String> details = new ArrayList<>();
 		details.add(ex.getLocalizedMessage());
-		ErrorResponse error = new ErrorResponse("Record Not Found", details);
-		return new ResponseEntity(error, HttpStatus.NOT_FOUND);
+		ErrorResponse error = new ErrorResponse("Record Not Found ", details);
+		return new ResponseEntity<Object>(error, HttpStatus.NOT_FOUND);
 	}
+
+
 
 }

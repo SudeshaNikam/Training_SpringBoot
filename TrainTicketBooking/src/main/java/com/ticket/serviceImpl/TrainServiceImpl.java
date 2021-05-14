@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -44,16 +43,9 @@ public class TrainServiceImpl implements TrainService {
 
 	@Override
 	public void saveTrainDetails(@Valid TrainRequestDto trainRequestDto) throws RecordAlreadyExist {
-
-		try {
 			Train train = new Train();
 			BeanUtils.copyProperties(trainRequestDto, train);
 			trainRepository.save(train);
-		} catch (ConstraintViolationException e) {
-			// TODO: handle exception
-			logger.error("Train Number Already Exist ..");
-			throw new RecordAlreadyExist("Train Number Already Exist ..");
-		}
 	}
 
 	@Override

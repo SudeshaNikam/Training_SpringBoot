@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -44,18 +43,14 @@ public class TicketServiceImpl implements TicketService {
 
 	@Override
 	public void saveTicketDetails(@Valid TicketRequestDto ticketRequestDto) throws RecordAlreadyExist {
-		try {
+	
 			Ticket ticket = new Ticket();
 			BeanUtils.copyProperties(ticketRequestDto, ticket);
 			LocalDate localDate = LocalDate.now();
 			Date d1 = java.sql.Date.valueOf(localDate);
 			ticket.setDateOfBooking(d1);
 			ticketRepository.save(ticket);
-		} catch (ConstraintViolationException e) {
-			// TODO: handle exception
-			logger.error("Ticket Number Already Exist ..");
-			throw new RecordAlreadyExist("TicketNumber Already Exist ..");
-		}
+		
 	}
 
 	@Override

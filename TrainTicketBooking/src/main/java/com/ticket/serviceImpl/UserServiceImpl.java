@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.validation.ConstraintViolationException;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.jboss.logging.Logger;
@@ -40,15 +39,9 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void saveUser(UserRequestDto userResponseDto) throws RecordAlreadyExist {
-		try {
 			User user = new User();
 			BeanUtils.copyProperties(userResponseDto, user);
 			userRepository.save(user);
-		} catch (ConstraintViolationException e) {
-			// TODO: handle exception
-			logger.error("Email Id Already Exist ..");
-			throw new RecordAlreadyExist("Email Id Already Exist ..");
-		}
 	}
 
 	@Override
